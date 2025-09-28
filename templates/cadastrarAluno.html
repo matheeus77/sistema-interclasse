@@ -1,0 +1,155 @@
+{% include 'head.html' %}
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<main class="card-container">
+
+    <!-- LISTA DE ALUNOS -->
+    <section class="table-section">
+        <div class="header-actions">
+            <h2>Lista de Alunos</h2>
+            <button id="openModalBtn" class="btn btn-primary">Cadastrar Aluno</button>
+        </div>
+        <br>
+        <!-- BARRA DE BUSCA -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Buscar Aluno...">
+        </div>
+
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Matrícula</th>
+                    <th>Nome</th>
+                    <th>Turma</th>
+                    <th>Gênero</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if alunos %}
+                {% for aluno in alunos %}
+                <tr>
+                    <td class="cor-tx">{{ aluno[0] }}</td>
+                    <td class="cor-tx">{{ aluno[1] }}</td>
+                    <td class="cor-tx">{{ aluno[2] }}</td>
+                    <td class="cor-tx">{{ aluno[3] }}</td>
+                    <td class="actions">
+                        <button class="btn btn-edit"
+                            onclick="abrirModalEdicao('{{ aluno[0] }}','{{ aluno[1] }}','{{ aluno[2] }}','{{ aluno[3] }}')">
+                            Editar
+                        </button>
+                        <button class="btn btn-delete" onclick="confirmarDelecao('{{ aluno[0] }}','{{ aluno[1] }}')">
+                            Deletar
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="5">Nenhum aluno cadastrado</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<!-- MODAL DE CADASTRO -->
+<div id="modalCadastro" class="modal">
+    <div class="modal-content">
+        <span id="closeModalBtn" class="close">&times;</span>
+        <h2>Cadastrar Aluno</h2>
+        <form method="post" action="/cadastrarAluno" class="form-grid">
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" name="nome" id="nome" required pattern="[A-Za-zÀ-ÿ\s]+">
+            </div>
+
+            <div class="form-group">
+                <label for="matricula">Matrícula:</label>
+                <input type="text" name="matricula" id="matricula" required pattern="\d{8}" maxlength="8">
+            </div>
+
+            <div class="form-group">
+                <label for="turma">Turma:</label>
+                <select name="turma" id="turma" required>
+                    <option value="">Selecione</option>
+                    {% for turma in turmas %}
+                    <option value="{{ turma['pk_nome_turma'] }}">{{ turma['pk_nome_turma'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="genero">Gênero:</label>
+                <select name="genero" id="genero" required>
+                    <option value="">Selecione</option>
+                    <option value="masculino">Masculino</option>
+                    <option value="feminino">Feminino</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL DE EDIÇÃO -->
+<div id="modalEdicao" class="modal">
+    <div class="modal-content">
+        <span id="closeEditBtn" class="close">&times;</span>
+        <h2>Editar Aluno</h2>
+        <form id="formEdicao" method="post" class="form-grid">
+            <div class="form-group">
+                <label>Nome:</label>
+                <input type="text" name="nome" id="editNome" required pattern="[A-Za-zÀ-ÿ\s]+">
+            </div>
+
+            <div class="form-group">
+                <label>Matrícula:</label>
+                <input type="text" name="matricula" id="editMatricula" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Turma:</label>
+                <select name="turma" id="editTurma" required>
+                    {% for turma in turmas %}
+                    <option value="{{ turma['pk_nome_turma'] }}">{{ turma['pk_nome_turma'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Gênero:</label>
+                <select name="genero" id="editGenero" required>
+                    <option value="masculino">Masculino</option>
+                    <option value="feminino">Feminino</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-edit">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- MODAL DE CONFIRMAÇÃO -->
+<div id="modalConfirmacao" class="modal">
+    <div class="modal-content">
+        <h3 id="textoConfirmacao"></h3>
+        <div class="form-actions">
+            <button id="btnCancelar" class="btn btn-primary">Cancelar</button>
+            <a id="btnConfirmar" class="btn btn-delete">Confirmar</a>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/cadastrarAluno.js') }}"></script>
+
+{% include 'footer.html' %}

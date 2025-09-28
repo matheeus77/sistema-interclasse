@@ -1,0 +1,188 @@
+{% include 'head.html' %}
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<main class="card-container">
+
+    <!-- LISTA DE EQUIPES -->
+    <section class="table-section">
+        <div class="header-actions">
+            <h2>Lista de Equipes</h2>
+            <button id="openModalBtn" class="btn btn-primary">Cadastrar Equipe</button>
+        </div>
+        <br>
+        <!-- BARRA DE BUSCA -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Buscar equipe...">
+        </div>
+
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Esporte</th>
+                    <th>Turma</th>
+                    <th>Classificação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if equipes %}
+                {% for equipe in equipes %}
+                <tr>
+                    <td class="cor-tx">{{ equipe[1] }}</td>
+                    <td class="cor-tx">{{ equipe[2] }}</td>
+                    <td class="cor-tx">{{ equipe[3] }}</td>
+                    <td class="actions">
+                        <button class="btn btn-edit"
+                            onclick="abrirModalEdicao('{{ equipe[0] }}','{{ equipe[1] }}','{{ equipe[2] }}','{{ equipe[3] }}')">
+                            Editar
+                        </button>
+                        <button class="btn btn-delete"
+                            onclick="confirmarDelecao('{{ equipe[0] }}','{{ equipe[1] }} - {{ equipe[2] }}')">
+                            Deletar
+                        </button>
+                        <button class="btn btn-primary"
+                            onclick="abrirModalJogadores('{{ equipe[0] }}','{{ equipe[2] }}')">
+                            Jogadores
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="4">Nenhuma equipe cadastrada</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </section>
+
+</main>
+
+<!-- MODAL DE CADASTRO -->
+<div id="modalCadastro" class="modal">
+    <div class="modal-content">
+        <span id="closeModalBtn" class="close">&times;</span>
+        <h2>Cadastrar Equipe</h2>
+        <form method="post" action="/cadastrarEquipe" class="form-grid">
+
+            <div class="form-group">
+                <label for="esporte">Esporte:</label>
+                <select name="esporte" id="esporte" required>
+                    <option value="">Selecione</option>
+                    {% for esporte in esportes %}
+                    <option value="{{ esporte['pk_esporte'] }}">{{ esporte['pk_esporte'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="turma">Turma:</label>
+                <select name="turma" id="turma" required onchange="carregarAlunosTurma(this.value)">
+                    <option value="">Selecione</option>
+                    {% for turma in turmas %}
+                    <option value="{{ turma['pk_nome_turma'] }}">{{ turma['pk_nome_turma'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Classificação:</label>
+                <select name="descricao" id="descricao" required>
+                    <option value="">Selecione</option>
+                    {% for c in classificacoes %}
+                    <option value="{{ c['pk_descricao'] }}">{{ c['pk_descricao'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Lista de alunos -->
+            <div class="form-group">
+                <label>Alunos da Turma:</label>
+                <div id="alunosTurmaContainer">
+                    <p>Selecione uma turma para listar os alunos.</p>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL DE EDIÇÃO -->
+<div id="modalEdicao" class="modal">
+    <div class="modal-content">
+        <span id="closeEditBtn" class="close">&times;</span>
+        <h2>Editar Equipe</h2>
+        <form id="formEdicao" method="post" class="form-grid">
+            <input type="text" name="pk_equipe" id="editId" readonly hidden>
+
+            <div class="form-group">
+                <label>Esporte:</label>
+                <select name="esporte" id="editEsporte" required>
+                    {% for esporte in esportes %}
+                    <option value="{{ esporte['pk_esporte'] }}">{{esporte['pk_esporte']}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Turma:</label>
+                <select name="turma" id="editTurma" required
+                    onchange="carregarAlunosEdicao(this.value, document.getElementById('editId').value)">
+                    {% for turma in turmas %}
+                    <option value="{{ turma['pk_nome_turma'] }}">{{ turma['pk_nome_turma'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Classificação:</label>
+                <select name="descricao" id="editDescricao" required>
+                    {% for c in classificacoes %}
+                    <option value="{{ c['pk_descricao'] }}">{{ c['pk_descricao'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Alunos da Turma:</label>
+                <div id="editAlunosTurmaContainer">
+                    <p>Selecione uma turma para listar os alunos.</p>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-edit">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMAÇÃO -->
+<div id="modalConfirmacao" class="modal">
+    <div class="modal-content">
+        <h3 id="textoConfirmacao"></h3>
+        <div class="form-actions">
+            <button id="btnCancelar" class="btn btn-primary">Cancelar</button>
+            <a id="btnConfirmar" class="btn btn-delete">Confirmar</a>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE JOGADORES -->
+<div id="modalJogadores" class="modal">
+    <div class="modal-content">
+        <h1 id="tituloEquipe"></h1>
+        <span id="closeJogadores" class="close">&times;</span>
+        <h2>Jogadores da Equipe</h2>
+        <ul id="listaJogadores"></ul>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/cadastrarEquipe.js') }}"></script>
+
+{% include 'footer.html' %}

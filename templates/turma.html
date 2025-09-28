@@ -1,0 +1,107 @@
+{% include 'head.html' %}
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<main class="card-container">
+
+    <!-- LISTA DE TURMAS -->
+    <section class="table-section">
+        <div class="header-actions">
+            <h2>Lista de Turmas</h2>
+            <button id="openModalBtn" class="btn btn-primary">Cadastrar Turma</button>
+        </div>
+        <br>
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Turma</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if turmas %}
+                {% for turma in turmas %}
+                <tr>
+                    <td class="cor-tx">{{ turma.pk_nome_turma }}</td>
+                    <td class="actions">
+                        <button class="btn btn-primary" onclick="abrirModalAlunos('{{ turma.pk_nome_turma }}')">
+                            Inspecionar
+                        </button>
+                        <button class="btn btn-edit" onclick="abrirModalEdicao('{{ turma.pk_nome_turma }}')">
+                            Editar
+                        </button>
+                        <button class="btn btn-delete" onclick="confirmarDelecao('{{ turma.pk_nome_turma }}')">
+                            Deletar
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="2">Nenhuma turma cadastrada</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<!-- MODAL DE CADASTRO -->
+<div id="modalCadastro" class="modal">
+    <div class="modal-content">
+        <span id="closeModalBtn" class="close">&times;</span>
+        <h2>Cadastrar Turma</h2>
+        <form method="post" action="/cadastrarTurma" class="form-grid">
+            <div class="form-group">
+                <label for="pk_nome_turma">Nome da Turma:</label>
+                <input type="text" name="pk_nome_turma" id="pk_nome_turma" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL DE EDIÇÃO -->
+<div id="modalEdicao" class="modal">
+    <div class="modal-content">
+        <span id="closeEditBtn" class="close">&times;</span>
+        <h2>Editar Turma</h2>
+        <form id="formEdicao" method="post" class="form-grid">
+            <div class="form-group">
+                <label>Nome da Turma:</label>
+                <input type="text" name="pk_nome_turma" id="editTurma" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-edit">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMAÇÃO -->
+<div id="modalConfirmacao" class="modal">
+    <div class="modal-content">
+        <h3 id="textoConfirmacao"></h3>
+        <div class="form-actions">
+            <button id="btnCancelar" class="btn btn-primary">Cancelar</button>
+            <a id="btnConfirmar" class="btn btn-delete">Confirmar</a>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE ALUNOS -->
+<div id="modalAlunos" class="modal">
+    <div class="modal-content">
+        <h1 id="tituloModal"></h1>
+        <span id="closeAlunos" class="close">&times;</span>
+        <h2>Alunos da Turma</h2>
+        <ul id="listaAlunos"></ul>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/turma.js') }}"></script>
+
+{% include 'footer.html' %}
