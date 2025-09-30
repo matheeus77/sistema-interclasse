@@ -2,7 +2,6 @@ from flask import Flask, render_template, redirect, request, session, jsonify, f
 from functools import wraps
 from model import *
 
-
 def verificaSessao(f):
     @wraps(f)
     def verificando(*args, **kwargs):

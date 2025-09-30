@@ -1,4 +1,4 @@
-from .criarConexao import criarConexao, database
+from .Cadastrar.criarConexao import criarConexao, database
 
 def subirCargo(matricula,nivel):
     conexao = criarConexao()
