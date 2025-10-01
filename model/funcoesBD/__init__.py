@@ -18,7 +18,6 @@ from .Buscar.buscarTurmas import buscarTurmas
 from .Buscar.buscarUsuarioPorNome import buscarUsuarioPorNome
 from .Buscar.buscarUsuarios import buscarUsuarios
 from .Cadastrar.cadastrarAluno import cadastrarAluno
-from .Cadastrar.cadastrarAlunos import cadastrarAlunos
 from .Cadastrar.cadastrarEquipe import cadastrarEquipe
 from .Cadastrar.cadastrarEsportes import cadastrarEsportes
 from .Cadastrar.cadastrarEstatisticasParaModalidade import cadastrarEstatisticasParaModalidade
@@ -38,6 +37,5 @@ from .Editar.editarUsuario import editarUsuario
 from .Deletar.removerEstatisticas import removerEstatisticas
 from .Deletar.removerEstatisticasDaModalidade import removerEstatisticasDaModalidade
 from .Deletar.removerModalidade import removerModalidade
-from .subirCargo import subirCargo
 from .Buscar.telaUsuarios import telaUsuarios
 from .Editar.trocarSenha import trocarSenha

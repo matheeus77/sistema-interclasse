@@ -1,5 +1,4 @@
 from .funcoesBD import (
-    adicionarEstatisticas,
     alunosPorTurmaListaEquipes,
     buscarAlunos,  
     buscarAlunosPorTurma,
@@ -20,7 +19,6 @@ from .funcoesBD import (
     buscarUsuarioPorNome,
     buscarUsuarios,
     cadastrarAluno,
-    cadastrarAlunos,
     cadastrarEquipe,
     cadastrarEsportes,
     cadastrarEstatisticasParaModalidade,
@@ -40,7 +38,6 @@ from .funcoesBD import (
     removerEstatisticas,
     removerEstatisticasDaModalidade,
     removerModalidade,
-    subirCargo,
     telaUsuarios,
     trocarSenha
     
