@@ -2,8 +2,15 @@
 
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="/static/css/loading.css">
 </head>
 <main class="card-container">
+        <!-- Tela de carregamento global -->
+    <div id="loading">
+    <div class="spinner"></div>
+    <div class="msg">Carregando... Por favor, aguarde</div>
+    </div>
+
 
     <!-- LISTA DE ALUNOS -->
     <section class="table-section">
@@ -151,5 +158,6 @@
 </div>
 
 <script src="{{ url_for('static', filename='js/cadastrarAluno.js') }}"></script>
+<script src="/static/js/loading.js"></script>
 
 {% include 'footer.html' %}
