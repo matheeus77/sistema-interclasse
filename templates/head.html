@@ -7,29 +7,45 @@
   <title>Interclasse ETE MFL</title>
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/card.css') }}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap" />
 
 </head>
 
 <body>
-  <!-- Barra superior -->
+
+
+
   <div class="barraSuperior">
     <button class="menu-btn" id="menuToggle" aria-label="Abrir menu">☰</button>
     <strong>Interclasse</strong>
     <span></span>
   </div>
 
+
   <!-- barraLateral-->
   <aside class="barraLateral" id="barraLateral">
     <div class="marca">
-      <span class="logo" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-          <path
-            d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
-        </svg>
+      </svg>
       </span>
-      <a href="/login" class="login-link">Login</a>
+      <div class="marca">
+        <span class="logo" aria-hidden="true">
+          <!-- ícone -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path
+              d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
+          </svg>
+        </span>
+
+        {% if nome_usuario %}
+        <div class="usuario-info">
+          <span class="login-link">Olá, {{ nome_usuario }}</span>
+
+        </div>
+        {% else %}
+        <a href="/login" class="login-link">Login</a>
+        {% endif %}
+      </div>
+
     </div>
 
     <nav>
@@ -60,14 +76,16 @@
         </a>
       </div>
 
-      <a class="nav-link {% if request.path == '/chaveamento' %}active{% endif %}" href="/chaveamento">
+      <a class="nav-link {% if request.path == '#' %}active{% endif %}" href="#">
         <span class="nav-icon" aria-hidden="true"></span>
         Partidas
       </a>
 
     </nav>
 
-    <a href="/logout" class="logout-link">Sair</a>
-    <div class="muted">ETE Ministro Fernando Lyra 2025</div>
+    <div class="footer">
+      <a href="/logout" class="logout-link">Sair</a>
+      <div class="muted">ETE Ministro Fernando Lyra 2025</div>
+    </div>
 
   </aside>

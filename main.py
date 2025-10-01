@@ -15,13 +15,51 @@ app = Flask(__name__)
 app.secret_key = '29bfd352-ed9e-4818-b05b-498b8f77e4e3'
 
 @app.route("/")
+@verificaSessao
 def home():
+    nome_usuario = session.get('nome')
+    return render_template("home.html", nome_usuario=nome_usuario)
 
-    return render_template("home.html")
+
+@app.context_processor
+def inject_user():
+    return dict(nome_usuario=session.get('nome'))
 
 
 ## ---------------LOGIN---------------- ##
 
+@app.route('/login')
+def login():
+    if 'nome' in session:
+        return redirect('/')
+    else:
+        return render_template('login.html')
+    
+@app.route('/login', methods=['POST'])
+def verificarLogin():
+    usuario = request.form['usuario']
+    senha = request.form['senha']
+
+    # Busca apenas pelo nome do usuário
+    usuario_encontrado = buscarUsuarioPorNome(usuario)
+
+    if not usuario_encontrado:
+        flash('Usuário não encontrado.', 'error')
+        return redirect(url_for('login'))
+
+    if senha != usuario_encontrado['senha']:
+        flash('Senha incorreta.', 'error')
+        return redirect(url_for('login'))
+
+    # Login bem-sucedido
+    session['nome'] = usuario
+    session['nivel'] = usuario_encontrado['nivel']
+    return redirect('/')
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
 
 
 ## ----------------LISTAGENS----------------- ##
@@ -211,17 +249,4 @@ def rotaDeletarUsuario(pk_usuario):
     return render_template("cadastrarUsuario.html", usuarios=usuarios, turmas=turmas)
 
 
-# ## ----------------CHAVEAMENTO------------------ ##
-
-# @app.route("/chaveamento")
-# def paginaChaveamento():
-#     esportes = buscarEsportes()
-#     return render_template("chaveamento.html", esportes=esportes)
-
-# # Buscar equipes de um esporte
-# @app.route("/equipesPorEsporte/<string:esporte>")
-# def equipesPorEsporte(esporte):
-#     equipes = buscarEquipesPorEsporte(esporte)  # você precisa implementar no model
-#     return jsonify({"equipes": [
-#         {"id": e[0], "nome": e[1], "turma": e[2], "descricao": e[3]} for e in equipes
-#     ]})
+## ----------------CHAVEAMENTO------------------ ##

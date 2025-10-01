@@ -208,3 +208,28 @@ nav {
   display: flex;
   align-items: center;
 }
+
+.footer {
+  margin-top: auto;
+  /* empurra tudo para o fim da barra */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* espaço entre Sair e o texto */
+}
+
+.logout-link {
+  text-align: center;
+  padding: 10px 0;
+  border-radius: 12px;
+  background: var(--cor-primaria);
+  color: var(--cor-marca);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.logout-link:hover {
+  background: var(--cor-borda);
+  color: #fff;
+}

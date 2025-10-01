@@ -28,7 +28,7 @@ from .funcoesBD import (
     cadastrarUsuario,
     criarConexao,
     criarEstatisticas,
-    criarPartidas,
+    criarPartidas,  
     deletarAluno,
     deletarEquipe,
     deletarTurma,
@@ -43,5 +43,4 @@ from .funcoesBD import (
     subirCargo,
     telaUsuarios,
     trocarSenha
-    
 )

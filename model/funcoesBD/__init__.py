@@ -16,7 +16,7 @@ from .buscarModalidades import buscarModalidades
 from .buscarPartidaPorId import buscarPartidaPorId
 from .buscarPartidas import buscarPartidas
 from .buscarTurmas import buscarTurmas
-from .buscarUsuarioPorNome import buscarUsuarioPorNome
+from .buscarUsuarioPorNome import buscarUsuarioPorNome  
 from .buscarUsuarios import buscarUsuarios
 from .cadastrarAluno import cadastrarAluno
 from .cadastrarAlunos import cadastrarAlunos
@@ -27,7 +27,7 @@ from .cadastrarTurma import cadastrarTurma
 from .cadastrarUsuario import cadastrarUsuario
 from .criarConexao import criarConexao
 from .criarEstatisticas import criarEstatisticas
-from .criarPartidas import criarPartidas
+from .criarPartidas import criarPartidas 
 from .deletarAluno import deletarAluno
 from .deletarEquipe import deletarEquipe
 from .deletarTurma import deletarTurma
