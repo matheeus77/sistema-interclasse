@@ -14,7 +14,6 @@ app = Flask(__name__)
 app.secret_key = '29bfd352-ed9e-4818-b05b-498b8f77e4e3'
 
 @app.route("/")
-@verificaSessao
 def home():
     nome_usuario = session.get('nome')
     return render_template("home.html", nome_usuario=nome_usuario)
