@@ -23,6 +23,7 @@
                     <th>Esporte</th>
                     <th>Turma</th>
                     <th>Classificação</th>
+                    <th>Nome da Equipe</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -33,9 +34,10 @@
                     <td class="cor-tx">{{ equipe[1] }}</td>
                     <td class="cor-tx">{{ equipe[2] }}</td>
                     <td class="cor-tx">{{ equipe[3] }}</td>
+                    <td class="cor-tx">{{ equipe[4] }}</td>
                     <td class="actions">
                         <button class="btn btn-edit"
-                            onclick="abrirModalEdicao('{{ equipe[0] }}','{{ equipe[1] }}','{{ equipe[2] }}','{{ equipe[3] }}')">
+                            onclick="abrirModalEdicao('{{ equipe[0] }}','{{ equipe[1] }}','{{ equipe[2] }}','{{ equipe[3] }}','{{ equipe[4] }}')">
                             Editar
                         </button>
                         <button class="btn btn-delete"
@@ -43,7 +45,7 @@
                             Deletar
                         </button>
                         <button class="btn btn-primary"
-                            onclick="abrirModalJogadores('{{ equipe[0] }}','{{ equipe[2] }}')">
+                            onclick="abrirModalJogadores('{{ equipe[0] }}','{{ equipe[1] }}','{{ equipe[2] }}','{{ equipe[4] }}')">
                             Jogadores
                         </button>
                     </td>
@@ -68,11 +70,18 @@
         <form method="post" action="/cadastrarEquipe" class="form-grid">
 
             <div class="form-group">
+                <label for="nome_equipe">Nome da Equipe (opcional):</label>
+                <input type="text" name="nome_equipe" id="nome_equipe" maxlength="255">
+            </div>
+
+            <div class="form-group">
                 <label for="esporte">Esporte:</label>
-                <select name="esporte" id="esporte" required>
+                <select name="esporte" id="esporte" required onchange="setLimiteJogadores(this)">
                     <option value="">Selecione</option>
                     {% for esporte in esportes %}
-                    <option value="{{ esporte['pk_esporte'] }}">{{ esporte['pk_esporte'] }}</option>
+                    <option value="{{ esporte['pk_esporte'] }}" data-grupo="{{ esporte['grupo'] }}" data-limite="{{ esporte['qtd_jogadores'] }}">
+                        {{ esporte['pk_esporte'] }} - {{ esporte['grupo'] }} (máx: {{ esporte['qtd_jogadores'] }})
+                    </option>
                     {% endfor %}
                 </select>
             </div>
@@ -121,10 +130,17 @@
             <input type="text" name="pk_equipe" id="editId" readonly hidden>
 
             <div class="form-group">
+                <label for="editNomeEquipe">Nome da Equipe (opcional):</label>
+                <input type="text" name="nome_equipe" id="editNomeEquipe" maxlength="255">
+            </div>
+
+            <div class="form-group">
                 <label>Esporte:</label>
-                <select name="esporte" id="editEsporte" required>
+                <select name="esporte" id="editEsporte" required onchange="setLimiteJogadores(this)">
                     {% for esporte in esportes %}
-                    <option value="{{ esporte['pk_esporte'] }}">{{esporte['pk_esporte']}}</option>
+                    <option value="{{ esporte['pk_esporte'] }}" data-grupo="{{ esporte['grupo'] }}" data-limite="{{ esporte['qtd_jogadores'] }}">
+                        {{ esporte['pk_esporte'] }} - {{ esporte['grupo'] }} (máx: {{ esporte['qtd_jogadores'] }})
+                    </option>
                     {% endfor %}
                 </select>
             </div>
@@ -176,9 +192,9 @@
 <!-- MODAL DE JOGADORES -->
 <div id="modalJogadores" class="modal">
     <div class="modal-content">
-        <h1 id="tituloEquipe"></h1>
         <span id="closeJogadores" class="close">&times;</span>
-        <h2>Jogadores da Equipe</h2>
+        <h2 id="tituloEquipe"></h2>
+        <h4 id="subTituloEquipe" style="color: gray; font-weight: normal;"></h4>
         <ul id="listaJogadores"></ul>
     </div>
 </div>

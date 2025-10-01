@@ -86,7 +86,7 @@ def paginacadastrarAluno():
     alunos = buscarAlunos()
     turmas = buscarTurmas()
     print(turmas[0]['pk_nome_turma'])
-    return render_template("cadastrarAluno.html", alunos=alunos, turmas = turmas)
+    return render_template("cadastrarAluno.html", alunos=alunos, turmas=turmas)
 
 @app.route("/cadastrarAluno", methods=["POST"])
 def rotaCadastrarAluno():
@@ -96,8 +96,8 @@ def rotaCadastrarAluno():
     genero = request.form.get("genero")
 
     cadastrarAluno(matricula, nome, turma, genero)
-    alunos = buscarAlunos()
-    return render_template("cadastrarAluno.html", alunos=alunos)
+    
+    return redirect(url_for("paginacadastrarAluno"))
 
 @app.route("/editarAluno/<matricula>", methods=["POST"])
 def rotaEditarAluno(matricula):
@@ -106,14 +106,14 @@ def rotaEditarAluno(matricula):
     genero = request.form.get("genero")
 
     editarAluno(matricula, nome, turma, genero)
-    alunos = buscarAlunos()
-    return render_template("cadastrarAluno.html", alunos=alunos)
+    
+    return redirect(url_for("paginacadastrarAluno"))
 
 @app.route("/deletarAluno/<matricula>")
 def rotaDeletarAluno(matricula):
     deletarAluno(matricula)
-    alunos = buscarAlunos()
-    return render_template("cadastrarAluno.html", alunos=alunos)
+    
+    return redirect(url_for("paginacadastrarAluno"))
 
 
 ## ------------------CADASTRAR TURMAS-------------------- ##
@@ -161,10 +161,10 @@ def rotaCadastrarEquipe():
     esporte = request.form.get("esporte")
     turma = request.form.get("turma")
     descricao = request.form.get("descricao")
+    nome_equipe = request.form.get("nome_equipe") or None
     alunos = request.form.getlist("alunos")
 
-    cadastrarEquipe(esporte, turma, descricao, alunos)
-
+    cadastrarEquipe(esporte, turma, descricao, nome_equipe, alunos)
     return redirect("/cadastrarEquipe")
 
 @app.route("/editarEquipe/<int:pk_equipe>", methods=["POST"])
@@ -172,9 +172,10 @@ def rotaEditarEquipe(pk_equipe):
     esporte = request.form.get("esporte")
     turma = request.form.get("turma")
     descricao = request.form.get("descricao")
+    nome_equipe = request.form.get("nome_equipe") or None
     alunos = request.form.getlist("alunos")
 
-    editarEquipe(pk_equipe, esporte, turma, descricao, alunos)
+    editarEquipe(pk_equipe, esporte, turma, descricao, nome_equipe, alunos)
     return redirect("/cadastrarEquipe")
 
 #Deletar equipe
@@ -184,9 +185,9 @@ def rotaDeletarEquipe(pk_equipe):
     return redirect("/cadastrarEquipe")
 
 # Buscar alunos por turma (JSON)
-@app.route("/alunosPorTurma/<nome_turma>")
-def alunosPorTurmaEquipes(nome_turma):
-    alunos = alunosPorTurmaListaEquipes(nome_turma)
+@app.route("/alunosPorTurma/<nome_turma>/<classificacao>")
+def alunosPorTurmaEquipes(nome_turma, classificacao):
+    alunos = alunosPorTurmaListaEquipes(nome_turma, classificacao)
     return jsonify({"alunos": alunos})
 
 # Jogadores de uma equipe (JSON)

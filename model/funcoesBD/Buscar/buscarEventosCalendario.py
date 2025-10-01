@@ -14,7 +14,7 @@ def buscarEventosCalendario(ano,mes):
         proximoAno += 1
     ultimoDia = f'{proximoAno}-{proximoMes:02d}-01'
     cursor.execute("""
-            SELECT c.dia_evento, p.fk_esporte, p.fk_turma_casa, p.fk_turma_visitante
+            SELECT c.dia_evento, p.fk_esporte, p.fk_equipe_casa, p.fk_equipe_visitante
             FROM calendario AS c JOIN partidas AS p ON c.fk_partida = p.pk_partida
             WHERE c.dia_evento >= %s AND c.dia_evento < %s
         """, (primeiroDia, ultimoDia))

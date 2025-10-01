@@ -1,4 +1,4 @@
-// MODAL CADASTRO
+// MODAL CADASTRO 
 const modalCadastro = document.getElementById("modalCadastro");
 const openBtn = document.getElementById("openModalBtn");
 const closeBtn = document.getElementById("closeModalBtn");
@@ -14,16 +14,16 @@ const modalEdicao = document.getElementById("modalEdicao");
 const closeEditBtn = document.getElementById("closeEditBtn");
 const formEdicao = document.getElementById("formEdicao");
 
-function abrirModalEdicao(id, esporte, turma, descricao) {
+function abrirModalEdicao(id, esporte, turma, descricao, nomeEquipe) {
     document.getElementById("editId").value = id;
     document.getElementById("editEsporte").value = esporte;
     document.getElementById("editTurma").value = turma;
     document.getElementById("editDescricao").value = descricao;
+    document.getElementById("editNomeEquipe").value = nomeEquipe || "";
 
     formEdicao.action = "/editarEquipe/" + id;
 
-    carregarAlunosEdicao(turma, id); // novo
-
+    carregarAlunosEdicao(turma, id);
     modalEdicao.style.display = "block";
 }
 closeEditBtn.onclick = () => modalEdicao.style.display = "none";
@@ -55,18 +55,48 @@ searchInput.addEventListener('keyup', function () {
     });
 });
 
-// Carregar alunos no cadastro
-function carregarAlunosTurma(turma) {
-    if (!turma) {
-        document.getElementById("alunosTurmaContainer").innerHTML = "<p>Selecione uma turma para listar os alunos.</p>";
+let limiteJogadores = null;
+
+// Setar limite de jogadores ao selecionar esporte
+function setLimiteJogadores(select) {
+    const option = select.options[select.selectedIndex];
+    limiteJogadores = parseInt(option.getAttribute("data-limite"));
+}
+
+// Bloquear seleção acima do limite
+function aplicarLimite(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container || !limiteJogadores) return;
+
+    const checkboxes = container.querySelectorAll("input[type='checkbox']");
+    checkboxes.forEach(cb => {
+        cb.addEventListener("change", () => {
+            const selecionados = container.querySelectorAll("input[type='checkbox']:checked").length;
+            if (selecionados > limiteJogadores) {
+                cb.checked = false;
+                alert(`O limite para este esporte é de ${limiteJogadores} jogadores.`);
+            }
+        });
+    });
+}
+
+// ----- carregar alunos no cadastro -----
+function carregarAlunosTurma() {
+    const turma = document.getElementById("turma").value;
+    const classificacao = document.getElementById("descricao").value;
+
+    if (!turma || !classificacao) {
+        document.getElementById("alunosTurmaContainer").innerHTML =
+            "<p>Selecione uma turma e classificação para listar os alunos.</p>";
         return;
     }
-    fetch(`/alunosPorTurma/${encodeURIComponent(turma)}`)
+
+    fetch(`/alunosPorTurma/${encodeURIComponent(turma)}/${encodeURIComponent(classificacao)}`)
         .then(response => response.json())
         .then(data => {
             let html = '';
             if (data.alunos.length === 0) {
-                html = "<p>Nenhum aluno cadastrado nesta turma.</p>";
+                html = "<p>Nenhum aluno cadastrado nesta turma com essa classificação.</p>";
             } else {
                 data.alunos.forEach(aluno => {
                     html += `
@@ -77,10 +107,14 @@ function carregarAlunosTurma(turma) {
                 });
             }
             document.getElementById("alunosTurmaContainer").innerHTML = html;
-        });
+            aplicarLimite("alunosTurmaContainer");
+        })
+        .catch(error => console.error("Erro ao carregar alunos:", error));
 }
+document.getElementById("turma").addEventListener("change", carregarAlunosTurma);
+document.getElementById("descricao").addEventListener("change", carregarAlunosTurma);
 
-// Carregar alunos no modal de edição
+// ----- carregar alunos no modal edição -----
 function carregarAlunosEdicao(turma, idEquipe) {
     if (!turma) {
         document.getElementById("editAlunosTurmaContainer").innerHTML = "<p>Selecione uma turma.</p>";
@@ -103,18 +137,29 @@ function carregarAlunosEdicao(turma, idEquipe) {
                             </div>`;
                     });
                     document.getElementById("editAlunosTurmaContainer").innerHTML = html;
+                    aplicarLimite("editAlunosTurmaContainer");
                 });
         });
 }
 
-// Jogadores da equipe
+// ----- jogadores modal -----
 const modalJogadores = document.getElementById("modalJogadores");
 const closeJogadores = document.getElementById("closeJogadores");
 const listaJogadores = document.getElementById("listaJogadores");
+const tituloEquipe = document.getElementById("tituloEquipe");
+let subTituloEquipe = document.getElementById("subTituloEquipe");
 
+// Fechar modal ao clicar no "x"
 closeJogadores.onclick = () => modalJogadores.style.display = "none";
 
-function abrirModalJogadores(idEquipe, nomeEquipe) {
+// Fechar modal ao clicar fora
+window.addEventListener('click', (event) => {
+    if (event.target == modalJogadores) {
+        modalJogadores.style.display = "none";
+    }
+});
+
+function abrirModalJogadores(idEquipe, esporte, grupo, nomeEquipe) {
     fetch(`/jogadoresPorEquipe/${idEquipe}`)
         .then(response => response.json())
         .then(data => {
@@ -128,7 +173,8 @@ function abrirModalJogadores(idEquipe, nomeEquipe) {
                     listaJogadores.appendChild(li);
                 });
             }
-            document.getElementById('tituloEquipe').innerText = `Equipe: ${nomeEquipe}`;
+            tituloEquipe.innerText = `${esporte} - ${grupo}`;
+            if(subTituloEquipe) subTituloEquipe.innerText = nomeEquipe ? nomeEquipe : '';
             modalJogadores.style.display = "block";
         });
 }
