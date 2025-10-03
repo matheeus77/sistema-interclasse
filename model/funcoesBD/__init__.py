@@ -4,6 +4,7 @@ from .Buscar.buscarAlunosPorTurma import buscarAlunosPorTurma
 from .Buscar.buscarClassificacoes import buscarClassificacoes
 from .Buscar.buscarEquipes import buscarEquipes
 from .Buscar.buscarEquipesPorEsporte import buscarEquipesPorEsporte
+from .Buscar.buscarEquipesPorTurma import buscarEquipesPorTurma
 from .Buscar.buscarEstatisticas import buscarEstatisticas
 from .Buscar.buscarEstatisticasPorId import buscarEstatisticasPorId
 from .Buscar.buscarEstatisticasDeModalidade import buscarEstatisticasDeModalidade

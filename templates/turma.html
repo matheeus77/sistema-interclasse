@@ -9,7 +9,9 @@
     <section class="table-section">
         <div class="header-actions">
             <h2>Lista de Turmas</h2>
+            {% if session['nivel'] == 'AlunoMonitor' or session['nivel'] == 'Administrador'%}
             <button id="openModalBtn" class="btn btn-primary">Cadastrar Turma</button>
+            {%endif%}
         </div>
         <br>
         <table class="styled-table">
@@ -26,14 +28,16 @@
                     <td class="cor-tx">{{ turma.pk_nome_turma }}</td>
                     <td class="actions">
                         <button class="btn btn-primary" onclick="abrirModalAlunos('{{ turma.pk_nome_turma }}')">
-                            Inspecionar
+                            Alunos
                         </button>
+                        {% if session['nivel'] == 'AlunoMonitor' or session['nivel'] == 'Administrador'%}
                         <button class="btn btn-edit" onclick="abrirModalEdicao('{{ turma.pk_nome_turma }}')">
                             Editar
                         </button>
                         <button class="btn btn-delete" onclick="confirmarDelecao('{{ turma.pk_nome_turma }}')">
                             Deletar
                         </button>
+                        {%endif%}
                     </td>
                 </tr>
                 {% endfor %}

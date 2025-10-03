@@ -9,7 +9,9 @@
     <section class="table-section">
         <div class="header-actions">
             <h2>Lista de Equipes</h2>
+            {% if session['nivel'] == 'AlunoMonitor' or session['nivel'] == 'Administrador'%}
             <button id="openModalBtn" class="btn btn-primary">Cadastrar Equipe</button>
+            {%endif%}
         </div>
         <br>
         <!-- BARRA DE BUSCA -->
@@ -36,6 +38,7 @@
                     <td class="cor-tx">{{ equipe[3] }}</td>
                     <td class="cor-tx">{{ equipe[4] }}</td>
                     <td class="actions">
+                        {% if nivel == 'AlunoMonitor' or session['nivel'] == 'Administrador'%}
                         <button class="btn btn-edit"
                             onclick="abrirModalEdicao('{{ equipe[0] }}','{{ equipe[1] }}','{{ equipe[2] }}','{{ equipe[3] }}','{{ equipe[4] }}')">
                             Editar
@@ -44,6 +47,7 @@
                             onclick="confirmarDelecao('{{ equipe[0] }}','{{ equipe[1] }} - {{ equipe[2] }}')">
                             Deletar
                         </button>
+                        {%endif%}
                         <button class="btn btn-primary"
                             onclick="abrirModalJogadores('{{ equipe[0] }}','{{ equipe[1] }}','{{ equipe[2] }}','{{ equipe[4] }}')">
                             Jogadores

@@ -5,6 +5,7 @@ from .funcoesBD import (
     buscarClassificacoes,
     buscarEquipes,
     buscarEquipesPorEsporte,
+    buscarEquipesPorTurma,
     buscarEsportes,
     buscarEstatisticas,
     buscarEstatisticasPorId,

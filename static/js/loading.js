@@ -1,20 +1,9 @@
-// Mostra loading (pode ser chamado manualmente quando precisar)
-function showLoading(message = "Carregando... Por favor, aguarde") {
-  const loading = document.getElementById("loading");
-  if (!loading) return;
-  loading.style.display = "flex";
-  const msg = loading.querySelector(".msg");
-  if (msg) msg.textContent = message;
-}
+// function showLoader() {
+//   const loader = document.getElementById("top-loader");
+//   loader.querySelector(".msg").textContent = msg;
+//   loader.style.display = "block";
+// }
 
-// Esconde loading
-function hideLoading() {
-  const loading = document.getElementById("loading");
-  if (!loading) return;
-  loading.style.display = "none";
-}
-
-// Ao carregar a página, remove o loading automaticamente
-window.addEventListener("load", () => {
-  hideLoading();
-});
+// function hideLoader() {
+//   document.getElementById("top-loader").style.display = "none";
+// }

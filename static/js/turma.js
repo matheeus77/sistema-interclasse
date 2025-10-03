@@ -2,9 +2,16 @@
 const modalCadastro = document.getElementById("modalCadastro");
 const openBtn = document.getElementById("openModalBtn");
 const closeBtn = document.getElementById("closeModalBtn");
+if (openBtn) {
+    openBtn.onclick = () => modalCadastro.style.display = "block";
+}
+if (closeBtn) {
+    closeBtn.onclick = () => modalCadastro.style.display = "none";
+}
 
-openBtn.onclick = () => modalCadastro.style.display = "block";
-closeBtn.onclick = () => modalCadastro.style.display = "none";
+window.onclick = (event) => {
+    if (event.target == modalCadastro) modalCadastro.style.display = "none";
+};
 
 // MODAL EDIÇÃO
 const modalEdicao = document.getElementById("modalEdicao");

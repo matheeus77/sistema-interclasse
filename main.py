@@ -52,12 +52,19 @@ def verificarLogin():
     # Login bem-sucedido
     session['nome'] = usuario
     session['nivel'] = usuario_encontrado['nivel']
+
+    # Verificação do Aluno Monitor
+    if usuario_encontrado['nivel'] == 'AlunoMonitor':
+        session['turma'] = usuario_encontrado['fk_nome_turma']
+    else:
+        session['turma'] = None
+
     return redirect('/')
 
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect("/login")
+    return redirect("/")
 
 
 ## ----------------LISTAGENS----------------- ##
@@ -82,9 +89,13 @@ if __name__ == "__main__":
 
 @app.route("/cadastrarAluno", methods=["GET"])
 def paginacadastrarAluno():
-    alunos = buscarAlunos()
-    turmas = buscarTurmas()
-    print(turmas[0]['pk_nome_turma'])
+    if session['nivel'] == 'AlunoMonitor':
+        alunos = buscarAlunosPorTurma(session['turma'])  # apenas a turma do monitor
+        turmas = [ {"pk_nome_turma": session['turma']} ] # só a turma dele
+    else:  # Administrador
+        alunos = buscarAlunos()
+        turmas = buscarTurmas()
+    
     return render_template("cadastrarAluno.html", alunos=alunos, turmas=turmas)
 
 @app.route("/cadastrarAluno", methods=["POST"])
@@ -95,7 +106,6 @@ def rotaCadastrarAluno():
     genero = request.form.get("genero")
 
     cadastrarAluno(matricula, nome, turma, genero)
-    
     return redirect(url_for("paginacadastrarAluno"))
 
 @app.route("/editarAluno/<matricula>", methods=["POST"])
@@ -145,15 +155,32 @@ def rotaDeletarTurma(turma):
 
 @app.route("/cadastrarEquipe", methods=["GET"])
 def paginaCadastrarEquipe():
-    equipes = buscarEquipes()
     esportes = buscarEsportes()
-    turmas = buscarTurmas()
     classificacoes = buscarClassificacoes()
-    return render_template("cadastrarEquipe.html",
-                           equipes=equipes,
-                           esportes=esportes,
-                           turmas=turmas,
-                           classificacoes=classificacoes)
+
+    # Visitante (sem login) → session.get('nivel') será None
+    nivel = session.get("nivel")
+    turma = session.get("turma")
+
+    if nivel == "AlunoMonitor":
+        equipes = buscarEquipesPorTurma(turma) if turma else []
+        turmas = [{"pk_nome_turma": turma}] if turma else []
+    elif nivel == "Administrador":
+        equipes = buscarEquipes()
+        turmas = buscarTurmas()
+    else:  # visitante
+        equipes = buscarEquipes()
+        turmas = []  # visitante não precisa cadastrar, só visualizar
+
+    return render_template(
+        "cadastrarEquipe.html",
+        equipes=equipes,
+        esportes=esportes,
+        turmas=turmas,
+        classificacoes=classificacoes,
+        nivel=nivel
+    )
+
 
 @app.route("/cadastrarEquipe", methods=["POST"])
 def rotaCadastrarEquipe():
