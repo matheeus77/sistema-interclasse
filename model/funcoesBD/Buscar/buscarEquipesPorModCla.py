@@ -1,6 +1,6 @@
 from ..Cadastrar.criarConexao import criarConexao, database
 
-def buscarEquipes():
+def buscarEquipesPorModCla(esporte, classificacao):
     conexao = criarConexao()
     try:
         with conexao.cursor() as cursor:
@@ -14,8 +14,9 @@ def buscarEquipes():
                 JOIN esportes s ON e.fk_esporte = s.pk_esporte
                 JOIN turmas t ON e.fk_nome_turma = t.pk_nome_turma
                 JOIN classificacao c ON e.fk_descricao = c.pk_descricao
+                where s.pk_esporte = %s and c.pk_descricao = %s
             """
             cursor.execute(query)
             return cursor.fetchall()
     finally:
-        conexao.close()        
+        conexao.close()
