@@ -1,0 +1,171 @@
+{% include 'head.html' %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar Chaveamento - Jogos Internos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        main {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        select, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; 
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #status-message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<main>
+
+<div class="container">
+    <h1>Gerar Chaveamento</h1>
+    
+    <form id="chaveamento-form">
+        
+        <div class="form-group">
+            <label for="esporte">Esporte:</label>
+            <select id="esporte" name="esporte" required>
+                <option value="">Selecione o Esporte</option>
+                {% for esporte in esportes %}
+                <option value="{{ esporte.pk_esporte }}">{{ esporte.pk_esporte }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="classificacao">Classificação (Gênero):</label>
+            <select id="classificacao" name="classificacao" required>
+                <option value="">Selecione a Classificação</option>
+                {% for classificacao in classificacoes %}
+                <option value="{{ classificacao.pk_descricao }}">{{ classificacao.pk_descricao }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit">Gerar e Salvar Chaveamento</button>
+    </form>
+
+    <div id="status-message"></div>
+</div>
+
+<script>
+    document.getElementById('chaveamento-form').addEventListener('submit', function(event) {
+        event.preventDefault(); 
+
+        const esporte = document.getElementById('esporte').value;
+        const classificacao = document.getElementById('classificacao').value;
+        const statusDiv = document.getElementById('status-message');
+
+        statusDiv.style.display = 'block';
+        statusDiv.className = '';
+        statusDiv.textContent = 'Gerando chaveamento...';
+
+        // O endpoint agora é a rota Flask que chama sua função Python
+        const endpoint = '/chaveamento/gerar'; 
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ // Envia os dados para a rota /chaveamento/gerar
+                esporte: esporte,
+                classificacao: classificacao
+            })
+        })
+        .then(response => {
+            // Se a requisição falhar (erro 500, 400), trata a resposta como erro
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.mensagem || `Erro do servidor: Status ${response.status}`);
+                });
+            }
+            return response.json(); 
+        })
+        .then(data => {
+            // Sucesso
+            if (data.status === 'sucesso') {
+                statusDiv.className = 'success';
+                statusDiv.textContent = `${data.mensagem} | Total de partidas da 1ª rodada salvas: ${data.total_partidas}`;
+            } else {
+                // Erro de validação ou lógica (status 200, mas status: erro no JSON)
+                statusDiv.className = 'error';
+                statusDiv.textContent = data.mensagem || 'Falha ao gerar o chaveamento.';
+            }
+        })
+        .catch(error => {
+            // Erros de conexão ou exceções lançadas
+            console.error('Erro na requisição:', error);
+            statusDiv.className = 'error';
+            statusDiv.textContent = `Falha Crítica: ${error.message}`;
+        });
+    });
+</script>
+
+</main>
+
+{% include 'footer.html' %}

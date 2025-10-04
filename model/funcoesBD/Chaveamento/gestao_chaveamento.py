@@ -203,3 +203,7 @@ if __name__ == "__main__":
     # Certifique-se de que a função criarConexao() está funcionando!
     gerarChaveamento('Futsal', 'Masculino')
     # gerarChaveamento('Tênis de Mesa', 'Misto')
+    
+    # Teste 2: Individual (a regra de turmas NÃO deve ser aplicada)
+    # Certifique-se de que 'Tênis de Mesa' existe e está marcado como 'Individual' no seu BD.
+    gerarChaveamento('Tênis de Mesa', 'Masculino')

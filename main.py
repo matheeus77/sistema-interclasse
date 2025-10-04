@@ -2,6 +2,19 @@ from flask import Flask, render_template, redirect, request, session, jsonify, f
 from functools import wraps
 from model import *
 
+
+# Assumindo que seu gestao_chaveamento.py está em model/funcoesBD/Chaveamento
+# E que o Flask pode importá-lo a partir da raiz 'model'
+try:
+    from model.funcoesBD.Chaveamento.gestao_chaveamento import gerarChaveamento
+except ImportError as e:
+    print(f"ATENÇÃO: Falha ao importar gerarChaveamento. Certifique-se de que todas as pastas possuem __init__.py e o caminho está correto. Erro: {e}")
+    # Define uma função placeholder para evitar quebra total
+    def gerarChaveamento(esporte, classificacao):
+        print("!!! FUNÇÃO DE CHAVEAMENTO NÃO CARREGADA !!!")
+        return None
+
+
 def verificaSessao(f):
     @wraps(f)
     def verificando(*args, **kwargs):
@@ -278,3 +291,55 @@ def rotaDeletarUsuario(pk_usuario):
 
 
 ## ----------------CHAVEAMENTO------------------ ##
+
+@app.route("/chaveamento", methods=["GET"])
+@verificaSessao # Adicione se apenas usuários logados puderem acessar
+def paginaGerarChaveamento():
+    # Buscar esportes e classificações para preencher os <select> no HTML
+    esportes = buscarEsportes()
+    classificacoes = buscarClassificacoes()
+    
+    return render_template(
+        "chaveamento.html", 
+        esportes=esportes, 
+        classificacoes=classificacoes
+    )
+
+
+@app.route("/chaveamento/gerar", methods=["POST"])
+@verificaSessao # Proteja a rota de geração
+def rotaGerarChaveamento():
+    # Recebe os dados JSON enviados pelo JavaScript
+    dados = request.get_json()
+    esporte = dados.get('esporte')
+    classificacao = dados.get('classificacao')
+
+    if not esporte or not classificacao:
+        return jsonify({"status": "erro", "mensagem": "Esporte e Classificação são obrigatórios."}), 400
+
+    try:
+        # CHAMA SUA LÓGICA PYTHON
+        chaveamento = gerarChaveamento(esporte, classificacao) 
+        
+        # Sua função gera o chaveamento e JÁ SALVA as partidas no BD.
+        # Agora precisamos apenas retornar o status para o frontend.
+        
+        # O resultado impresso no terminal será o log do 'gerarChaveamento'.
+        
+        # Como sua função retorna o chaveamento completo, podemos retornar o número de partidas da 1ª rodada
+        total_partidas_1a_rodada = len(chaveamento[0]) if chaveamento and chaveamento[0] else 0
+
+        # Retorna o JSON de sucesso para o JavaScript
+        return jsonify({
+            "status": "sucesso",
+            "mensagem": f"Chaveamento de {esporte} ({classificacao}) gerado e salvo.",
+            "total_partidas": total_partidas_1a_rodada
+        })
+
+    except Exception as e:
+        print(f"Erro Crítico ao Gerar Chaveamento: {e}")
+        # Retorna o JSON de erro
+        return jsonify({
+            "status": "erro", 
+            "mensagem": f"Erro interno ao gerar chaveamento: {str(e)}"
+        }), 500
