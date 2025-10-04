@@ -131,7 +131,8 @@ def rotaDeletarAluno(matricula):
 @app.route("/cadastrarTurma", methods=["POST"])
 def rotaCadastrarTurma():
     pk_nome_turma = request.form.get("pk_nome_turma")
-    cadastrarTurma(pk_nome_turma)
+    icone_url = request.form.get("icone_url") 
+    cadastrarTurma(pk_nome_turma, icone_url)
     turmas = buscarTurmas()
     return render_template("turma.html", turmas=turmas)
 
@@ -139,7 +140,8 @@ def rotaCadastrarTurma():
 @app.route("/editarTurma/<string:turma>", methods=["POST"])
 def rotaEditarTurma(turma):
     novo_nome = request.form.get("pk_nome_turma")
-    editarTurma(turma, novo_nome)
+    icone_url = request.form.get("icone_url") 
+    editarTurma(turma, novo_nome, icone_url)
     turmas = buscarTurmas()
     return render_template("turma.html", turmas=turmas)
 

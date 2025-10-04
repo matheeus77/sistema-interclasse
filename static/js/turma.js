@@ -57,7 +57,8 @@ function abrirModalAlunos(turma) {
             } else {
                 data.alunos.forEach(aluno => {
                     const li = document.createElement('li');
-                    li.textContent = `${aluno.matricula} - ${aluno.nome}`;
+                    li.textContent =
+                     `${aluno.nome}`;
                     listaAlunos.appendChild(li);
                 });
             }

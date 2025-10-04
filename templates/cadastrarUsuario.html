@@ -104,7 +104,7 @@
         <form id="formEdicao" method="post" class="form-grid">
             <div class="form-group">
                 <label>Usuário (login):</label>
-                <input type="text" name="pk_usuario" id="editUsuario" readonly>
+                <input type="text" name="pk_usuario" id="editUsuario">
             </div>
 
             <div class="form-group">
@@ -117,7 +117,7 @@
 
             <div class="form-group" id="turmaEdicao" style="display:none;">
                 <label for="edit_fk_nome_turma">Turma:</label>
-                <!-- IMPORTANT: name="fk_nome_turma" (mesmo nome que o backend espera) -->
+                <!-- Observação: name="fk_nome_turma" (mesmo nome que o backend espera) -->
                 <select name="fk_nome_turma" id="edit_fk_nome_turma">
                     <option value="">Selecione</option>
                     {% for turma in turmas %}

@@ -56,7 +56,8 @@ searchInput.addEventListener('keyup', function () {
         const esporte = row.cells[0].textContent.toLowerCase();
         const turma = row.cells[1].textContent.toLowerCase();
         const descricao = row.cells[2].textContent.toLowerCase();
-        row.style.display = (esporte.includes(filter) || turma.includes(filter) || descricao.includes(filter)) ? '' : 'none';
+        const nome_equipe = row.cells[3].textContent.toLowerCase();
+        row.style.display = (esporte.includes(filter) || turma.includes(filter) || descricao.includes(filter) || nome_equipe.includes(filter)) ? '' : 'none';
     });
 });
 

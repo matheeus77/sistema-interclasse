@@ -5,6 +5,7 @@ from .Buscar.buscarClassificacoes import buscarClassificacoes
 from .Buscar.buscarEquipes import buscarEquipes
 from .Buscar.buscarEquipesPorEsporte import buscarEquipesPorEsporte
 from .Buscar.buscarEquipesPorTurma import buscarEquipesPorTurma
+from .Buscar.buscarEsportePorId import buscarEsportePorId
 from .Buscar.buscarEstatisticas import buscarEstatisticas
 from .Buscar.buscarEstatisticasPorId import buscarEstatisticasPorId
 from .Buscar.buscarEstatisticasDeModalidade import buscarEstatisticasDeModalidade
@@ -27,6 +28,8 @@ from .Cadastrar.cadastrarUsuario import cadastrarUsuario
 from .Cadastrar.criarConexao import criarConexao
 from .Cadastrar.criarEstatisticas import criarEstatisticas
 from .Cadastrar.criarPartidas import criarPartidas
+from .Chaveamento.buscarEquipesPorModCla import buscarEquipesPorModCla
+from .Chaveamento.gestao_chaveamento import gerar_chaveamento_sem_bye_contra_bye
 from .Deletar.deletarAluno import deletarAluno
 from .Deletar.deletarEquipe import deletarEquipe
 from .Deletar.deletarTurma import deletarTurma
