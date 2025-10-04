@@ -67,7 +67,8 @@ searchInput.addEventListener('keyup', function () {
     rows.forEach(row => {
         const nome = row.cells[1].textContent.toLowerCase();
         const matricula = row.cells[0].textContent.toLowerCase();
+        const turma = row.cells[2].textContent.toLowerCase();
 
-        row.style.display = (nome.includes(filter) || matricula.includes(filter)) ? '' : 'none';
+        row.style.display = (nome.includes(filter) || matricula.includes(filter) || turma.includes(filter)) ? '' : 'none';
     });
 });

@@ -13,8 +13,6 @@
 
 <body>
 
-
-
   <div class="barraSuperior">
     <button class="menu-btn" id="menuToggle" aria-label="Abrir menu">☰</button>
     <strong>Interclasse</strong>
@@ -49,42 +47,61 @@
     </div>
 
     <nav>
+
       <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
         <span class="nav-icon" aria-hidden="true"></span>
         Início
       </a>
 
+      {% if session['nivel'] == 'AlunoMonitor' or session['nivel'] == 'Administrador'%}
       <a href="javascript:void(0)" class="nav-link submenu-toggle">
         <span class="nav-icon" aria-hidden="true"></span>
         Gerenciamento ▾
       </a>
+      {%endif%}
       <div class="submenu">
+        {%if session['nivel'] == 'Administrador'%}
         <a class="nav-link {% if request.path == '/turma' %}active{% endif %}" href="/turma">
           Turmas
         </a>
+        {%endif%}
+        {% if session['nivel'] == 'AlunoMonitor' or session['nivel'] == 'Administrador'%}
         <a class="nav-link {% if request.path == '/cadastrarAluno' %}active{% endif %}" href="/cadastrarAluno">
           Alunos
         </a>
         <a class="nav-link {% if request.path == '/cadastrarEquipe' %}active{% endif %}" href="/cadastrarEquipe">
           Equipes
         </a>
+        {%endif%}
+        {%if session['nivel'] == 'Administrador'%}
         <a class="nav-link {% if request.path == '/esportes' %}active{% endif %}" href="/esportes">
           Modalidades
         </a>
         <a class="nav-link {% if request.path == '/cadastrarUsuario' %}active{% endif %}" href="/cadastrarUsuario">
           Usuarios
         </a>
+        {%endif%}
       </div>
-
       <a class="nav-link {% if request.path == '#' %}active{% endif %}" href="#">
         <span class="nav-icon" aria-hidden="true"></span>
         Partidas
       </a>
+      {%if session['nivel'] != 'Administrador' and session['nivel'] != 'AlunoMonitor'%}
+      <a class="nav-link {% if request.path == '/turma' %}active{% endif %}" href="/turma">
+        <span class="nav-icon" aria-hidden="true"></span>
+        Turmas
+      <a class="nav-link {% if request.path == '/cadastrarEquipe' %}active{% endif %}" href="/cadastrarEquipe">
+        <span class="nav-icon" aria-hidden="true"></span>
+        Equipes
+      </a>
+      {%endif%}
 
     </nav>
 
     <div class="footer">
+      {% if session['nivel'] == 'AlunoMonitor' or session['nivel'] == 'Administrador'%}
       <a href="/logout" class="logout-link">Sair</a>
+      {%endif%}
       <div class="muted">ETE Ministro Fernando Lyra 2025</div>
     </div>
 

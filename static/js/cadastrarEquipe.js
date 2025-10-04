@@ -3,8 +3,13 @@ const modalCadastro = document.getElementById("modalCadastro");
 const openBtn = document.getElementById("openModalBtn");
 const closeBtn = document.getElementById("closeModalBtn");
 
-openBtn.onclick = () => modalCadastro.style.display = "block";
-closeBtn.onclick = () => modalCadastro.style.display = "none";
+if (openBtn) {
+    openBtn.onclick = () => modalCadastro.style.display = "block";
+}
+if (closeBtn) {
+    closeBtn.onclick = () => modalCadastro.style.display = "none";
+}
+
 window.onclick = (event) => {
     if (event.target == modalCadastro) modalCadastro.style.display = "none";
 };
@@ -51,7 +56,8 @@ searchInput.addEventListener('keyup', function () {
         const esporte = row.cells[0].textContent.toLowerCase();
         const turma = row.cells[1].textContent.toLowerCase();
         const descricao = row.cells[2].textContent.toLowerCase();
-        row.style.display = (esporte.includes(filter) || turma.includes(filter) || descricao.includes(filter)) ? '' : 'none';
+        const nome_equipe = row.cells[3].textContent.toLowerCase();
+        row.style.display = (esporte.includes(filter) || turma.includes(filter) || descricao.includes(filter) || nome_equipe.includes(filter)) ? '' : 'none';
     });
 });
 
