@@ -39,12 +39,11 @@ def gerarProximaRodada(esporte, classificacao, etapa_atual):
                     
             # 3. Inserir as novas partidas no BD
             query = """
-            INSERT INTO partidas 
-                (fk_esporte, fk_descricao, fk_equipe_casa, fk_equipe_visitante, 
-                 definida, par_re1, par_re2, etapa)
-            VALUES 
-                (%s, %s, %s, %s, 'nao', 0, 0, %s)
-            """
+                INSERT INTO partidas 
+                    (fk_esporte, fk_descricao, fk_equipe_casa, fk_equipe_visitante, etapa)
+                VALUES 
+                    (%s, %s, %s, %s, %s)
+                """
             
             # OBS: par_re1 e par_re2 seriam usados para vincular à partida anterior,
             # mas vamos simplificar o INSERT agora.

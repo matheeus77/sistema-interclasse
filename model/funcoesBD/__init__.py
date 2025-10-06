@@ -11,7 +11,6 @@ from .Buscar.buscarEstatisticasPorId import buscarEstatisticasPorId
 from .Buscar.buscarEstatisticasDeModalidade import buscarEstatisticasDeModalidade
 from .Buscar.buscarEstatisticasPorModalidade import buscarEstatisticasPorModalidade
 from .Buscar.buscarEsportes import buscarEsportes
-from .Buscar.buscarEventosCalendario import buscarEventosCalendario
 from .Buscar.buscarJogadoresPorEquipe import buscarJogadoresPorEquipe
 from .Buscar.buscarModalidades import buscarModalidades
 from .Buscar.buscarPartidaPorId import buscarPartidaPorId
@@ -50,4 +49,3 @@ from .Buscar.telaUsuarios import telaUsuarios
 from .Editar.trocarSenha import trocarSenha
 from .Buscar.buscarMembrosEquipe import buscarMembrosEquipe
 from .Buscar.buscarEstatisticasPrincipal import buscarEstatisticasPrincipal
-from .Buscar.buscarEventosCalendarioFiltros import buscarEventosCalendarioFiltros

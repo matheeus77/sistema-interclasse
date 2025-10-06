@@ -218,14 +218,16 @@ def rotaEditarEquipe(pk_equipe):
     return redirect("/cadastrarEquipe")
 
 #Deletar equipe
-@app.route("/deletarEquipe/<int:pk_equipe>")
+@app.route("/deletarEquipe/<int:pk_equipe>", methods=["DELETE"])
 def rotaDeletarEquipe(pk_equipe):
     try:
         deletarEquipe(pk_equipe)
-        flash("Equipe deletada com sucesso!", "success")
+        return "OK"
     except ValueError as e:
-        flash(str(e), "error")
-    return redirect("/cadastrarEquipe")
+        return str(e), 400
+    except Exception as e:
+        print("Erro ao deletar:", e)
+        return "ERRO", 500
 
 # Buscar alunos por turma (JSON)
 @app.route("/alunosPorTurma/<nome_turma>/<classificacao>")

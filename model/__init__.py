@@ -12,7 +12,6 @@ from .funcoesBD import (
     buscarEstatisticasPorId,
     buscarEstatisticasDeModalidade,
     buscarEstatisticasPorModalidade,
-    buscarEventosCalendario,
     buscarJogadoresPorEquipe,
     buscarModalidades,
     buscarPartidaPorId,
@@ -51,5 +50,4 @@ from .funcoesBD import (
     trocarSenha,
     buscarMembrosEquipe,
     buscarEstatisticasPrincipal,
-    buscarEventosCalendarioFiltros
 )

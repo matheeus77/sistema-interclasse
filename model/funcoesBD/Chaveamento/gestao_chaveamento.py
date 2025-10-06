@@ -86,12 +86,12 @@ def salvar_partidas(chaveamento, esporte, classificacao):
     
     # Query para inserção na tabela 'partidas'
     query = """
-    INSERT INTO partidas 
-        (fk_esporte, fk_descricao, fk_equipe_casa, fk_equipe_visitante, 
-         definida, par_re1, par_re2, etapa)
-    VALUES 
-        (%s, %s, %s, %s, 'nao', 0, 0, %s)
-    """
+        INSERT INTO partidas 
+            (fk_esporte, fk_descricao, fk_equipe_casa, fk_equipe_visitante, etapa)
+        VALUES 
+            (%s, %s, %s, %s, %s)
+        """
+# A tupla de dados_partida já está correta com 5 elementos.
 
     # O chaveamento é uma lista de rodadas. Só salvamos a primeira (índice 0)
     if chaveamento and chaveamento[0]:

@@ -4,9 +4,9 @@ database = 'etemfl83_inter_classe'
 
 def criarConexao():
     conexaoBD = mysql.connector.connect(
-        host='br418.hostgator.com.br',
-        user='etemfl83_interclasse',
-        password='L=ky%HhV2E5W',
+        host='127.0.0.1',
+        user='root',
+        password='Giovann@2007#',
         database=database
     )
     return conexaoBD
