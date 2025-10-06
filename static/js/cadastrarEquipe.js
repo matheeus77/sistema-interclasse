@@ -41,10 +41,30 @@ const btnConfirmar = document.getElementById("btnConfirmar");
 
 function confirmarDelecao(id, equipe) {
     textoConfirmacao.textContent = `Deseja realmente deletar a equipe ${equipe}?`;
-    btnConfirmar.href = "/deletarEquipe/" + id;
+    btnConfirmar.onclick = function () {
+        fetch(`/deletarEquipe/${id}`, { method: "DELETE" })
+            .then(response => response.text())
+            .then(result => {
+                modalConfirmacao.style.display = "none"; // fecha o modal
+
+                if (result === "OK") {
+                    location.reload(); // recarrega sem mensagem
+                } else {
+                    alert("Esta equipe não pode ser deletada pois está vinculada a uma partida.");
+                }
+            })
+            .catch(error => {
+                modalConfirmacao.style.display = "none";
+                alert("Erro ao tentar deletar a equipe.");
+                console.error(error);
+            });
+    };
+
     modalConfirmacao.style.display = "block";
 }
+
 btnCancelar.onclick = () => modalConfirmacao.style.display = "none";
+
 
 // FILTRO DE BUSCA
 const searchInput = document.getElementById('searchInput');
@@ -126,6 +146,7 @@ function carregarAlunosEdicao(turma, idEquipe) {
         document.getElementById("editAlunosTurmaContainer").innerHTML = "<p>Selecione uma turma.</p>";
         return;
     }
+
     fetch(`/alunosPorTurma/${encodeURIComponent(turma)}`)
         .then(res => res.json())
         .then(data => {
@@ -143,10 +164,17 @@ function carregarAlunosEdicao(turma, idEquipe) {
                             </div>`;
                     });
                     document.getElementById("editAlunosTurmaContainer").innerHTML = html;
+
+                    // Obter limite do esporte atualmente selecionado
+                    const selectEsporte = document.getElementById("editEsporte");
+                    const option = selectEsporte.options[selectEsporte.selectedIndex];
+                    limiteJogadores = parseInt(option.getAttribute("data-limite"));
+
                     aplicarLimite("editAlunosTurmaContainer");
                 });
         });
 }
+
 
 // ----- jogadores modal -----
 const modalJogadores = document.getElementById("modalJogadores");

@@ -29,7 +29,12 @@ from .Cadastrar.criarConexao import criarConexao
 from .Cadastrar.criarEstatisticas import criarEstatisticas
 from .Cadastrar.criarPartidas import criarPartidas
 from .Chaveamento.buscarEquipesPorModCla import buscarEquipesPorModCla
+from .Chaveamento.buscarPartidasParaGestao import buscarPartidasParaGestao
+from .Chaveamento.gerarProximaRodada import gerarProximaRodada
 from .Chaveamento.gestao_chaveamento import gerar_chaveamento_sem_bye_contra_bye
+from .Chaveamento.getVencedoresEtapa import getVencedoresEtapa
+from .Chaveamento.salvarVencedorPartida import salvarVencedorPartida
+from .Chaveamento.verificarEtapaCompleta import verificarEtapaCompleta
 from .Deletar.deletarAluno import deletarAluno
 from .Deletar.deletarEquipe import deletarEquipe
 from .Deletar.deletarTurma import deletarTurma
@@ -43,3 +48,6 @@ from .Deletar.removerEstatisticasDaModalidade import removerEstatisticasDaModali
 from .Deletar.removerModalidade import removerModalidade
 from .Buscar.telaUsuarios import telaUsuarios
 from .Editar.trocarSenha import trocarSenha
+from .Buscar.buscarMembrosEquipe import buscarMembrosEquipe
+from .Buscar.buscarEstatisticasPrincipal import buscarEstatisticasPrincipal
+from .Buscar.buscarEventosCalendarioFiltros import buscarEventosCalendarioFiltros

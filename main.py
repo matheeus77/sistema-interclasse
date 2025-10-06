@@ -2,7 +2,6 @@ from flask import Flask, render_template, redirect, request, session, jsonify, f
 from functools import wraps
 from model import *
 
-
 # Assumindo que seu gestao_chaveamento.py está em model/funcoesBD/Chaveamento
 # E que o Flask pode importá-lo a partir da raiz 'model'
 try:
@@ -29,7 +28,7 @@ app.secret_key = '29bfd352-ed9e-4818-b05b-498b8f77e4e3'
 @app.route("/")
 def home():
     nome_usuario = session.get('nome')
-    return render_template("home.html", nome_usuario=nome_usuario)
+    return redirect('/cadastrarEquipe')
 
 
 @app.context_processor
@@ -72,13 +71,12 @@ def verificarLogin():
     else:
         session['turma'] = None
 
-    return redirect('/')
+    return redirect('/cadastrarEquipe')
 
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect("/")
-
+    return redirect("/cadastrarEquipe")
 
 ## ----------------LISTAGENS----------------- ##
 
@@ -222,7 +220,11 @@ def rotaEditarEquipe(pk_equipe):
 #Deletar equipe
 @app.route("/deletarEquipe/<int:pk_equipe>")
 def rotaDeletarEquipe(pk_equipe):
-    deletarEquipe(pk_equipe)
+    try:
+        deletarEquipe(pk_equipe)
+        flash("Equipe deletada com sucesso!", "success")
+    except ValueError as e:
+        flash(str(e), "error")
     return redirect("/cadastrarEquipe")
 
 # Buscar alunos por turma (JSON)
@@ -293,7 +295,6 @@ def rotaDeletarUsuario(pk_usuario):
 ## ----------------CHAVEAMENTO------------------ ##
 
 @app.route("/chaveamento", methods=["GET"])
-@verificaSessao # Adicione se apenas usuários logados puderem acessar
 def paginaGerarChaveamento():
     # Buscar esportes e classificações para preencher os <select> no HTML
     esportes = buscarEsportes()
@@ -343,3 +344,110 @@ def rotaGerarChaveamento():
             "status": "erro", 
             "mensagem": f"Erro interno ao gerar chaveamento: {str(e)}"
         }), 500
+    
+@app.route("/chaveamento/partidas", methods=["GET"])
+@verificaSessao
+def rotaBuscarPartidas():
+    """
+    Busca as partidas de uma chave (filtrada por GET) para listagem no painel.
+    """
+    # Recebe os filtros do JavaScript via URL params (request.args)
+    esporte = request.args.get('esporte')
+    classificacao = request.args.get('classificacao')
+    
+    if not esporte and not classificacao:
+        return jsonify({"status": "erro", "mensagem": "Filtros são obrigatórios para buscar partidas."}), 400
+
+    try:
+        # 1. Busca no BD a lista completa de partidas da chave (com nomes das equipes)
+        partidas_bd = buscarPartidasParaGestao(esporte, classificacao) 
+
+        # 2. Prepara o JSON para o frontend
+        partidas_json = []
+        for p in partidas_bd:
+            # Assumimos que a função de busca (buscarPartidasParaGestao) já traz 'pk_equipe_vencedora'
+            partidas_json.append({
+                "pk_partida": p['pk_partida'],
+                "esporte": p['fk_esporte'],
+                "classificacao": p['fk_descricao'],
+                "etapa": p['etapa'],
+                "fk_equipe_casa": p['fk_equipe_casa'],
+                "equipe_casa_nome": p['nome_equipe_casa'],
+                "fk_equipe_visitante": p['fk_equipe_visitante'],
+                "equipe_visitante_nome": p['nome_equipe_visitante'],
+                "vencedor_pk": p.get('pk_equipe_vencedora')
+            })
+
+        return jsonify({"status": "sucesso", "partidas": partidas_json})
+
+    except Exception as e:
+        print(f"Erro ao buscar partidas: {e}")
+        return jsonify({"status": "erro", "mensagem": "Falha ao carregar partidas do banco de dados."}), 500
+
+
+@app.route("/chaveamento/vencedor", methods=["POST"])
+@verificaSessao
+def rotaRegistrarVencedor():
+    """
+    Registra o vencedor e verifica se é hora de gerar a próxima etapa.
+    """
+    # Recebe o ID da partida e o ID do vencedor do JavaScript (via JSON)
+    dados = request.get_json()
+    partida_id = dados.get('partida_id')
+    vencedor_id = dados.get('vencedor_id')
+
+    if not partida_id or not vencedor_id:
+        return jsonify({"status": "erro", "mensagem": "Dados da partida ou vencedor ausentes."}), 400
+
+    # 1. Tenta salvar o vencedor (UPDATE no BD)
+    if not salvarVencedorPartida(partida_id, vencedor_id):
+        return jsonify({"status": "erro", "mensagem": "Falha ao salvar vencedor no banco de dados."}), 500
+
+    # 2. LÓGICA DE AVANÇO (Esta parte é a mais delicada e depende de funções auxiliares)
+    try:
+        # Busca informações da partida recém-resolvida (você precisará desta função no BD)
+        # Por exemplo: buscarInfoPartida(partida_id) -> {'esporte': 'Futsal', 'classificacao': 'Masculino', 'etapa': 1}
+        # Para fins de demonstração, simularemos as infos, mas você deve buscá-las!
+        
+        # O ideal é buscar estas 3 colunas (esporte, classificacao, etapa) pelo partida_id.
+        # Exemplo Simulado (substitua pela busca real):
+        chave_info = {"esporte": "Futsal", "classificacao": "Masculino", "etapa": 1} # DEVE SER BUSCADO DO BD
+
+        esporte = chave_info['esporte']
+        classificacao = chave_info['classificacao']
+        etapa_atual = chave_info['etapa']
+        proxima_etapa = etapa_atual + 1
+        
+        # Verifica se todas as partidas desta etapa (para a chave específica) foram resolvidas
+        if verificarEtapaCompleta(esporte, classificacao, etapa_atual):
+            
+            # Se sim, gera e salva as partidas da próxima rodada
+            partidas_geradas = gerarProximaRodada(esporte, classificacao, etapa_atual)
+            
+            if partidas_geradas > 0:
+                return jsonify({
+                    "status": "sucesso", 
+                    "mensagem": f"Vencedor salvo! {partidas_geradas} partidas da Etapa {proxima_etapa} geradas.",
+                    "proxima_etapa": proxima_etapa
+                })
+            else:
+                 return jsonify({
+                    "status": "sucesso", 
+                    "mensagem": "Vencedor salvo. Fim do chaveamento (campeão definido).",
+                    "proxima_etapa": etapa_atual 
+                })
+        
+        # Se a etapa ainda não estiver completa
+        return jsonify({
+            "status": "sucesso", 
+            "mensagem": "Vencedor salvo.",
+            "proxima_etapa": etapa_atual
+        })
+
+    except Exception as e:
+        print(f"Erro na lógica de avanço da chave: {e}")
+        # Retorna sucesso no salvamento, mas avisa sobre a falha no avanço
+        return jsonify({
+            "status": "sucesso", 
+            "mensagem": "Vencedor salvo, mas falha ao avançar chaveamento. Verifique o console do servidor."
+        })

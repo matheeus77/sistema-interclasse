@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     
     <style>
+        /* Estilos existentes */
         main {
             font-family: Arial, sans-serif;
             background-color: #f4f7f6;
@@ -24,6 +25,7 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 500px;
+            margin-bottom: 20px; /* Adiciona espaço abaixo do container de geração */
         }
         h1 {
             color: #333;
@@ -48,7 +50,8 @@
             border-radius: 4px;
             box-sizing: border-box; 
         }
-        button {
+        /* Botão Gerar */
+        .btn-gerar {
             background-color: #007bff;
             color: white;
             padding: 12px 20px;
@@ -59,7 +62,7 @@
             font-size: 16px;
             transition: background-color 0.3s ease;
         }
-        button:hover {
+        .btn-gerar:hover {
             background-color: #0056b3;
         }
         #status-message {
@@ -77,10 +80,76 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+
+        /* NOVOS ESTILOS PARA VISUALIZAÇÃO DE PARTIDAS */
+        #partidas-listagem {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed #ccc;
+        }
+        .partida-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .partida-info {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+        .times-placar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .times-placar:last-child {
+            border-bottom: none;
+        }
+        .equipe-nome {
+            width: 60%;
+            text-align: left;
+        }
+        .equipe-placar {
+            width: 15%;
+            text-align: center;
+            font-weight: bold;
+        }
+        .btn-vencedor {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            width: 25%;
+        }
+        .btn-vencedor:hover {
+            background-color: #1e7e34;
+        }
+        .partida-resolvida {
+            background-color: #e6ffed;
+            border-left: 5px solid #28a745;
+            opacity: 0.7;
+        }
+        .partida-resolvida .btn-vencedor {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <main>
 
+{%if session['nivel'] == 'Administrador'%}
 <div class="container">
     <h1>Gerar Chaveamento</h1>
     
@@ -106,14 +175,47 @@
             </select>
         </div>
 
-        <button type="submit">Gerar e Salvar Chaveamento</button>
+        <button type="submit" class="btn-gerar">Gerar e Salvar Chaveamento</button>
     </form>
 
     <div id="status-message"></div>
 </div>
 
+<div class="container">
+    <h1>Gerenciar Partidas (1ª Etapa)</h1>
+
+    <div class="form-group">
+        <label for="filtro-esporte">Filtrar Esporte:</label>
+        <select id="filtro-esporte" name="filtro-esporte">
+            <option value="">-- Todos os Esportes --</option>
+            {% for esporte in esportes %}
+            <option value="{{ esporte.pk_esporte }}">{{ esporte.pk_esporte }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="filtro-classificacao">Filtrar Gênero:</label>
+        <select id="filtro-classificacao" name="filtro-classificacao">
+            <option value="">-- Todas as Classificações --</option>
+            {% for classificacao in classificacoes %}
+            <option value="{{ classificacao.pk_descricao }}">{{ classificacao.pk_descricao }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <button id="btn-carregar-partidas" class="btn-gerar">Carregar Partidas</button>
+
+    <div id="partidas-listagem">
+        <p id="partidas-status">Use os filtros acima e clique em "Carregar Partidas" para visualizar.</p>
+    </div>
+</div>
+{%endif%}
+
 <script>
+    // --- LÓGICA DE GERAÇÃO (EXISTENTE) ---
     document.getElementById('chaveamento-form').addEventListener('submit', function(event) {
+        // ... (seu código de geração existente aqui) ...
         event.preventDefault(); 
 
         const esporte = document.getElementById('esporte').value;
@@ -124,7 +226,6 @@
         statusDiv.className = '';
         statusDiv.textContent = 'Gerando chaveamento...';
 
-        // O endpoint agora é a rota Flask que chama sua função Python
         const endpoint = '/chaveamento/gerar'; 
 
         fetch(endpoint, {
@@ -132,13 +233,12 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ // Envia os dados para a rota /chaveamento/gerar
+            body: JSON.stringify({ 
                 esporte: esporte,
                 classificacao: classificacao
             })
         })
         .then(response => {
-            // Se a requisição falhar (erro 500, 400), trata a resposta como erro
             if (!response.ok) {
                 return response.json().then(errorData => {
                     throw new Error(errorData.mensagem || `Erro do servidor: Status ${response.status}`);
@@ -147,23 +247,156 @@
             return response.json(); 
         })
         .then(data => {
-            // Sucesso
             if (data.status === 'sucesso') {
                 statusDiv.className = 'success';
                 statusDiv.textContent = `${data.mensagem} | Total de partidas da 1ª rodada salvas: ${data.total_partidas}`;
+                // Após gerar, recarrega a lista de partidas (se os filtros estiverem corretos)
+                carregarPartidas();
             } else {
-                // Erro de validação ou lógica (status 200, mas status: erro no JSON)
                 statusDiv.className = 'error';
                 statusDiv.textContent = data.mensagem || 'Falha ao gerar o chaveamento.';
             }
         })
         .catch(error => {
-            // Erros de conexão ou exceções lançadas
             console.error('Erro na requisição:', error);
             statusDiv.className = 'error';
             statusDiv.textContent = `Falha Crítica: ${error.message}`;
         });
     });
+
+
+    // --- NOVA LÓGICA DE GESTÃO DE PARTIDAS ---
+    document.getElementById('btn-carregar-partidas').addEventListener('click', carregarPartidas);
+
+    function carregarPartidas() {
+        const esporte = document.getElementById('filtro-esporte').value;
+        const classificacao = document.getElementById('filtro-classificacao').value;
+        const listagemDiv = document.getElementById('partidas-listagem');
+        const statusP = document.getElementById('partidas-status');
+        
+        listagemDiv.innerHTML = '';
+        statusP.textContent = 'Carregando partidas...';
+
+        // Endpoint para buscar partidas não resolvidas (você precisará criar essa rota no Flask)
+        const endpoint = `/chaveamento/partidas?esporte=${esporte}&classificacao=${classificacao}`;
+
+        fetch(endpoint)
+            .then(response => response.json())
+            .then(data => {
+                listagemDiv.innerHTML = ''; // Limpa a lista
+                
+                if (data.status === 'erro') {
+                    statusP.textContent = `Erro: ${data.mensagem}`;
+                    return;
+                }
+
+                if (data.partidas.length === 0) {
+                    statusP.textContent = 'Nenhuma partida encontrada para os filtros selecionados.';
+                    listagemDiv.appendChild(statusP);
+                    return;
+                }
+                
+                // Renderiza cada partida
+                data.partidas.forEach(partida => {
+                    const card = document.createElement('div');
+                    card.className = partida.vencedor_pk ? 'partida-card partida-resolvida' : 'partida-card';
+                    card.id = `partida-${partida.pk_partida}`;
+
+                    // Se a partida estiver resolvida, mostra o vencedor
+                    const statusText = partida.vencedor_pk 
+                        ? `RESOLVIDA: Vencedor: ${partida.vencedor_nome}` 
+                        : `Etapa ${partida.etapa}`;
+
+                    card.innerHTML = `
+                        <div class="partida-info">
+                            ${partida.esporte} - ${partida.classificacao} | ${statusText}
+                        </div>
+                        
+                        <div class="times-placar">
+                            <span class="equipe-nome">${partida.equipe_casa_nome}</span>
+                            <button 
+                                class="btn-vencedor" 
+                                data-partida-id="${partida.pk_partida}" 
+                                data-vencedor-id="${partida.fk_equipe_casa}"
+                                ${partida.vencedor_pk ? 'disabled' : ''}
+                            >
+                                VENCEDOR
+                            </button>
+                        </div>
+                        
+                        <div class="times-placar">
+                            <span class="equipe-nome">${partida.equipe_visitante_nome}</span>
+                            <button 
+                                class="btn-vencedor" 
+                                data-partida-id="${partida.pk_partida}" 
+                                data-vencedor-id="${partida.fk_equipe_visitante}"
+                                ${partida.vencedor_pk ? 'disabled' : ''}
+                            >
+                                VENCEDOR
+                            </button>
+                        </div>
+                    `;
+                    listagemDiv.appendChild(card);
+                });
+
+                // Adiciona o listener para os botões de Vencedor
+                listagemDiv.querySelectorAll('.btn-vencedor').forEach(button => {
+                    button.addEventListener('click', registrarVencedor);
+                });
+            })
+            .catch(error => {
+                listagemDiv.innerHTML = `<p class="error">Falha ao carregar partidas: ${error.message}</p>`;
+                console.error('Erro na requisição de partidas:', error);
+            });
+    }
+
+    function registrarVencedor(event) {
+        const button = event.target;
+        const partidaId = button.dataset.partidaId;
+        const vencedorId = button.dataset.vencedorId;
+        
+        if (button.disabled) return;
+
+        // Confirmação simples
+        if (!confirm('Tem certeza que deseja registrar este time como VENCEDOR?')) {
+            return;
+        }
+
+        button.textContent = 'Registrando...';
+        button.disabled = true;
+
+        // Endpoint para registrar o vencedor (você precisará criar essa rota no Flask)
+        const endpoint = `/chaveamento/vencedor`;
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                partida_id: partidaId,
+                vencedor_id: vencedorId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'sucesso') {
+                alert(`Vencedor registrado! Próxima partida será gerada na Etapa ${data.proxima_etapa}.`);
+                // Recarrega as partidas para atualizar o estado
+                carregarPartidas(); 
+            } else {
+                alert(`ERRO: ${data.mensagem}`);
+                button.textContent = 'VENCEDOR'; // Restaura o botão
+                button.disabled = false;
+            }
+        })
+        .catch(error => {
+            alert('Falha crítica ao registrar vencedor.');
+            console.error('Erro ao registrar vencedor:', error);
+            button.textContent = 'VENCEDOR';
+            button.disabled = false;
+        });
+    }
 </script>
 
 </main>

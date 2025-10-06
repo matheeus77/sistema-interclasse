@@ -4,8 +4,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <main class="card-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 
-    <!-- LISTA DE EQUIPES -->
+<!-- LISTA DE EQUIPES -->
     <section class="table-section">
         <div class="header-actions">
             <h2>Lista de Equipes</h2>
@@ -22,10 +31,9 @@
         <table class="styled-table">
             <thead>
                 <tr>
-                    <th>Esporte</th>
                     <th>Turma</th>
-                    <th>Classificação</th>
-                    <th>Nome da Equipe</th>
+                    <th>Esporte</th>
+                    <th>gênero</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -33,14 +41,15 @@
                 {% if equipes %}
                 {% for equipe in equipes %}
                 <tr>
-                    <td class="cor-tx">{{ equipe[1] }}</td>
                     <td class="cor-tx">{{ equipe[2] }}</td>
+                    <td class="cor-tx">{{ equipe[1] }}</td>
+                    
                     <td class="cor-tx">{{ equipe[3] }}</td>
-                    <td class="cor-tx">{{ equipe[4] }}</td>
+                    
                     <td class="actions">
                         {% if nivel == 'AlunoMonitor' or session['nivel'] == 'Administrador'%}
                         <button class="btn btn-edit"
-                            onclick="abrirModalEdicao('{{ equipe[0] }}','{{ equipe[1] }}','{{ equipe[2] }}','{{ equipe[3] }}','{{ equipe[4] }}')">
+                            onclick="abrirModalEdicao('{{ equipe[0] }}','{{ equipe[1] }}','{{ equipe[2] }}','{{ equipe[3] }}')">
                             Editar
                         </button>
                         <button class="btn btn-delete"
@@ -49,7 +58,7 @@
                         </button>
                         {%endif%}
                         <button class="btn btn-primary"
-                            onclick="abrirModalJogadores('{{ equipe[0] }}','{{ equipe[1] }}','{{ equipe[2] }}','{{ equipe[4] }}')">
+                            onclick="abrirModalJogadores('{{ equipe[0] }}','{{ equipe[1] }}','{{ equipe[2] }}')">
                             Jogadores
                         </button>
                     </td>
@@ -73,10 +82,6 @@
         <h2>Cadastrar Equipe</h2>
         <form method="post" action="/cadastrarEquipe" class="form-grid">
 
-            <div class="form-group">
-                <label for="nome_equipe">Nome da Equipe (opcional):</label>
-                <input type="text" name="nome_equipe" id="nome_equipe" maxlength="255">
-            </div>
 
             <div class="form-group">
                 <label for="esporte">Esporte:</label>
@@ -101,7 +106,7 @@
             </div>
 
             <div class="form-group">
-                <label for="descricao">Classificação:</label>
+                <label for="descricao">gênero:</label>
                 <select name="descricao" id="descricao" required>
                     <option value="">Selecione</option>
                     {% for c in classificacoes %}
@@ -134,11 +139,6 @@
             <input type="text" name="pk_equipe" id="editId" readonly hidden>
 
             <div class="form-group">
-                <label for="editNomeEquipe">Nome da Equipe (opcional):</label>
-                <input type="text" name="nome_equipe" id="editNomeEquipe" maxlength="255">
-            </div>
-
-            <div class="form-group">
                 <label>Esporte:</label>
                 <select name="esporte" id="editEsporte" required onchange="setLimiteJogadores(this)">
                     {% for esporte in esportes %}
@@ -160,7 +160,7 @@
             </div>
 
             <div class="form-group">
-                <label>Classificação:</label>
+                <label>gênero:</label>
                 <select name="descricao" id="editDescricao" required>
                     {% for c in classificacoes %}
                     <option value="{{ c['pk_descricao'] }}">{{ c['pk_descricao'] }}</option>

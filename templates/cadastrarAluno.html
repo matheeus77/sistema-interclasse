@@ -21,10 +21,10 @@
         <table class="styled-table">
             <thead>
                 <tr>
-                    <th>Matrícula</th>
-                    <th>Nome</th>
                     <th>Turma</th>
+                    <th>Nome</th>
                     <th>Gênero</th>
+                    <th>Matrícula</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -32,10 +32,10 @@
                 {% if alunos %}
                 {% for aluno in alunos %}
                 <tr>
-                    <td class="cor-tx">{{ aluno[0] }}</td>
-                    <td class="cor-tx">{{ aluno[1] }}</td>
                     <td class="cor-tx">{{ aluno[2] }}</td>
+                    <td class="cor-tx">{{ aluno[1] }}</td>
                     <td class="cor-tx">{{ aluno[3] }}</td>
+                    <td class="cor-tx">{{ aluno[0] }}</td>
                     <td class="actions">
                         <button class="btn btn-edit"
                             onclick="abrirModalEdicao('{{ aluno[0] }}','{{ aluno[1] }}','{{ aluno[2] }}','{{ aluno[3] }}')">

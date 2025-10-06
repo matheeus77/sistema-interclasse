@@ -29,8 +29,13 @@ from .funcoesBD import (
     criarConexao,
     criarEstatisticas,
     criarPartidas,
-    buscarEquipesPorModCla,  
+    buscarEquipesPorModCla, 
+    buscarPartidasParaGestao,
+    gerarProximaRodada, 
     gerar_chaveamento_sem_bye_contra_bye,
+    getVencedoresEtapa,
+    salvarVencedorPartida,
+    verificarEtapaCompleta,
     deletarAluno,
     deletarEquipe,
     deletarTurma,
@@ -43,5 +48,8 @@ from .funcoesBD import (
     removerEstatisticasDaModalidade,
     removerModalidade,
     telaUsuarios,
-    trocarSenha
+    trocarSenha,
+    buscarMembrosEquipe,
+    buscarEstatisticasPrincipal,
+    buscarEventosCalendarioFiltros
 )
